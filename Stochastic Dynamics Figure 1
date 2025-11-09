@@ -1,0 +1,281 @@
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
+import numpy as np
+
+# Create figure with subplots
+fig = plt.figure(figsize=(16, 10))
+
+# Main title
+fig.suptitle('Neural Competition Framework for Cognitive Control',
+             fontsize=18, fontweight='bold', y=0.98)
+
+# ============================================================================
+# Panel A: System Dynamics Schematic
+# ============================================================================
+ax1 = plt.subplot(2, 2, 1)
+ax1.set_xlim(0, 10)
+ax1.set_ylim(0, 10)
+ax1.axis('off')
+ax1.set_title('(A) Coupled Stochastic Dynamics', fontsize=14, fontweight='bold', pad=20)
+
+# PFC Population box
+pfc_box = FancyBboxPatch((1, 6), 3, 2.5, boxstyle="round,pad=0.1",
+                         edgecolor='#2E86AB', facecolor='#A9D6E5', linewidth=3)
+ax1.add_patch(pfc_box)
+ax1.text(2.5, 7.25, 'PFC\nPopulation', ha='center', va='center',
+         fontsize=12, fontweight='bold', color='#013A63')
+ax1.text(2.5, 6.5, r'$x^1_t$', ha='center', va='center',
+         fontsize=14, style='italic')
+
+# Limbic Population box
+limbic_box = FancyBboxPatch((6, 6), 3, 2.5, boxstyle="round,pad=0.1",
+                            edgecolor='#C1121F', facecolor='#FFC9C9', linewidth=3)
+ax1.add_patch(limbic_box)
+ax1.text(7.5, 7.25, 'Limbic\nSystem', ha='center', va='center',
+         fontsize=12, fontweight='bold', color='#780000')
+ax1.text(7.5, 6.5, r'$x^2_t$', ha='center', va='center',
+         fontsize=14, style='italic')
+
+# Self-excitation arrows (loops)
+# PFC self-excitation
+pfc_loop = mpatches.FancyArrowPatch((1.5, 8.5), (1.2, 7.8),
+                                    connectionstyle="arc3,rad=1.5",
+                                    arrowstyle='->', mutation_scale=20,
+                                    linewidth=2.5, color='#2E86AB')
+ax1.add_patch(pfc_loop)
+ax1.text(0.5, 8.3, r'$\beta_1 \tanh(x^1)$', fontsize=10,
+         bbox=dict(boxstyle='round', facecolor='white', edgecolor='#2E86AB', linewidth=1.5))
+
+# Limbic self-excitation
+limbic_loop = mpatches.FancyArrowPatch((8.5, 8.5), (8.8, 7.8),
+                                       connectionstyle="arc3,rad=-1.5",
+                                       arrowstyle='->', mutation_scale=20,
+                                       linewidth=2.5, color='#C1121F')
+ax1.add_patch(limbic_loop)
+ax1.text(9.5, 8.3, r'$\beta_2 \tanh(x^2)$', fontsize=10,
+         bbox=dict(boxstyle='round', facecolor='white', edgecolor='#C1121F', linewidth=1.5))
+
+# Cross-inhibition arrows
+# PFC inhibits Limbic
+inhibit1 = FancyArrowPatch((4, 7.8), (6, 7.5),
+                           arrowstyle='-|>', mutation_scale=25,
+                           linewidth=3, color='#2E86AB', linestyle='--')
+ax1.add_patch(inhibit1)
+ax1.text(5, 8.2, r'$-\gamma_{12} \sigma(x^2)$', fontsize=10,
+         bbox=dict(boxstyle='round', facecolor='#FFFFCC', edgecolor='black', linewidth=1))
+
+# Limbic inhibits PFC
+inhibit2 = FancyArrowPatch((6, 7.2), (4, 6.9),
+                           arrowstyle='-|>', mutation_scale=25,
+                           linewidth=3, color='#C1121F', linestyle='--')
+ax1.add_patch(inhibit2)
+ax1.text(5, 6.5, r'$-\gamma_{21} \sigma(x^1)$', fontsize=10,
+         bbox=dict(boxstyle='round', facecolor='#FFFFCC', edgecolor='black', linewidth=1))
+
+# Control inputs
+control1 = FancyArrowPatch((2.5, 5.5), (2.5, 6),
+                          arrowstyle='->', mutation_scale=25,
+                          linewidth=3, color='#06A77D')
+ax1.add_patch(control1)
+ax1.text(2.5, 5.2, r'$u^1_t$ (Control)', fontsize=10, ha='center',
+         bbox=dict(boxstyle='round', facecolor='#D8F3DC', edgecolor='#06A77D', linewidth=1.5))
+
+control2 = FancyArrowPatch((7.5, 5.5), (7.5, 6),
+                          arrowstyle='->', mutation_scale=25,
+                          linewidth=3, color='#06A77D')
+ax1.add_patch(control2)
+ax1.text(7.5, 5.2, r'$u^2_t$ (Control)', fontsize=10, ha='center',
+         bbox=dict(boxstyle='round', facecolor='#D8F3DC', edgecolor='#06A77D', linewidth=1.5))
+
+# External inputs
+external1 = FancyArrowPatch((1, 7.25), (1, 7.25), arrowstyle='<-',
+                           mutation_scale=25, linewidth=2.5, color='#F77F00')
+ax1.annotate('', xy=(1, 7.25), xytext=(-0.3, 7.25),
+             arrowprops=dict(arrowstyle='->', lw=2.5, color='#F77F00'))
+ax1.text(-0.5, 7.25, r'$I^1(t)$', fontsize=10, ha='right', va='center',
+         bbox=dict(boxstyle='round', facecolor='#FFE5B4', edgecolor='#F77F00'))
+
+external2 = FancyArrowPatch((9, 7.25), (9, 7.25), arrowstyle='<-',
+                           mutation_scale=25, linewidth=2.5, color='#F77F00')
+ax1.annotate('', xy=(9, 7.25), xytext=(10.3, 7.25),
+             arrowprops=dict(arrowstyle='->', lw=2.5, color='#F77F00'))
+ax1.text(10.5, 7.25, r'$I^2(t)$', fontsize=10, ha='left', va='center',
+         bbox=dict(boxstyle='round', facecolor='#FFE5B4', edgecolor='#F77F00'))
+
+# Noise (Brownian motion)
+ax1.text(2.5, 5.7, r'$+ \sigma_1 dW^1_t$', fontsize=9, ha='center',
+         style='italic', color='#666666')
+ax1.text(7.5, 5.7, r'$+ \sigma_2 dW^2_t$', fontsize=9, ha='center',
+         style='italic', color='#666666')
+
+# Decay terms
+ax1.text(1.3, 6.3, r'$-\alpha_1 x^1$', fontsize=9, style='italic', color='#666666')
+ax1.text(8.7, 6.3, r'$-\alpha_2 x^2$', fontsize=9, style='italic', color='#666666')
+
+# Legend
+legend_elements = [
+    mpatches.Patch(facecolor='#A9D6E5', edgecolor='#2E86AB', linewidth=2, label='PFC Population'),
+    mpatches.Patch(facecolor='#FFC9C9', edgecolor='#C1121F', linewidth=2, label='Limbic Population'),
+    mpatches.FancyArrow(0, 0, 0.5, 0, width=0.3, color='#06A77D', label='Control Input'),
+    mpatches.FancyArrow(0, 0, 0.5, 0, width=0.3, color='black', linestyle='--', label='Inhibition')
+]
+ax1.legend(handles=legend_elements, loc='upper left', fontsize=8, framealpha=0.9)
+
+# ============================================================================
+# Panel B: Cost Functionals
+# ============================================================================
+ax2 = plt.subplot(2, 2, 2)
+ax2.set_xlim(0, 10)
+ax2.set_ylim(0, 10)
+ax2.axis('off')
+ax2.set_title('(B) Cost Functionals & Objectives', fontsize=14, fontweight='bold', pad=20)
+
+# Cost functional for Player 1 (PFC)
+y_start = 8
+cost1_box = FancyBboxPatch((0.5, y_start-0.8), 9, 1.8, boxstyle="round,pad=0.15",
+                           edgecolor='#2E86AB', facecolor='#E8F4F8', linewidth=2.5)
+ax2.add_patch(cost1_box)
+ax2.text(5, y_start+0.5, 'Player 1 (PFC) Objective:', fontsize=11,
+         ha='center', fontweight='bold', color='#013A63')
+ax2.text(5, y_start-0.2, r'$J^1(u^1, u^2) = \mathbb{E}\left[\int_0^T L^1(x^1, x^2, u^1, u^2)\,dt + \Phi^1(x^1_T, x^2_T)\right]$',
+         fontsize=11, ha='center', style='italic')
+
+# Components of L^1 (modified to avoid \underbrace)
+y_comp = 5.5
+ax2.text(5, y_comp, r'$L^1 = (\|x^1 - x^1_{\text{target}}\|^2_{Q^1}, \text{Task Performance})$' +
+         r'$ + (\|u^1\|^2_{R^1}, \text{Metabolic Cost})$' +
+         r'$ + (c^1\|x^2\|^2, \text{Suppress Opponent})$',
+         fontsize=10, ha='center')
+
+# Cost functional for Player 2 (Limbic)
+y_start2 = 3.5
+cost2_box = FancyBboxPatch((0.5, y_start2-0.8), 9, 1.8, boxstyle="round,pad=0.15",
+                           edgecolor='#C1121F', facecolor='#FFF0F0', linewidth=2.5)
+ax2.add_patch(cost2_box)
+ax2.text(5, y_start2+0.5, 'Player 2 (Limbic) Objective:', fontsize=11,
+         ha='center', fontweight='bold', color='#780000')
+ax2.text(5, y_start2-0.2, r'$J^2(u^1, u^2) = \mathbb{E}\left[\int_0^T L^2(x^1, x^2, u^1, u^2)\,dt + \Phi^2(x^1_T, x^2_T)\right]$',
+         fontsize=11, ha='center', style='italic')
+
+# Competition note
+comp_box = FancyBboxPatch((1, 0.5), 8, 1.2, boxstyle="round,pad=0.1",
+                          edgecolor='#F77F00', facecolor='#FFF4E6', linewidth=2)
+ax2.add_patch(comp_box)
+ax2.text(5, 1.1, r'Both players minimize their costs simultaneously',
+         fontsize=10, ha='center', fontweight='bold', color='#D35400')
+ax2.text(5, 0.7, r'Each optimization depends on opponent strategy $\rightarrow$ Strategic Interaction',
+         fontsize=9, ha='center', style='italic', color='#D35400')
+
+# ============================================================================
+# Panel C: Nash Equilibrium Concept
+# ============================================================================
+ax3 = plt.subplot(2, 2, 3)
+ax3.set_xlim(0, 10)
+ax3.set_ylim(0, 10)
+ax3.axis('off')
+ax3.set_title('(C) Nash Equilibrium Characterization', fontsize=14, fontweight='bold', pad=20)
+
+# Nash equilibrium definition box
+nash_box = FancyBboxPatch((0.5, 7), 9, 2.5, boxstyle="round,pad=0.15",
+                          edgecolor='#6A4C93', facecolor='#E8D7FF', linewidth=3)
+ax3.add_patch(nash_box)
+ax3.text(5, 8.8, 'Nash Equilibrium Definition', fontsize=12, ha='center',
+         fontweight='bold', color='#4A0E4E')
+ax3.text(5, 8.2, r'$(u^{1*}, u^{2*})$ is a Nash equilibrium if:', fontsize=10, ha='center')
+ax3.text(5, 7.7, r'$J^1(u^{1*}, u^{2*}) \leq J^1(u^1, u^{2*})$ for all $u^1$',
+         fontsize=10, ha='center', style='italic')
+ax3.text(5, 7.3, r'$J^2(u^{1*}, u^{2*}) \leq J^2(u^{1*}, u^2)$ for all $u^2$',
+         fontsize=10, ha='center', style='italic')
+
+# Interpretation
+interp_box = FancyBboxPatch((0.5, 4.5), 9, 2, boxstyle="round,pad=0.15",
+                            edgecolor='#6A4C93', facecolor='#F5F0FF', linewidth=2)
+ax3.add_patch(interp_box)
+ax3.text(5, 6, 'Interpretation:', fontsize=11, ha='center', fontweight='bold', color='#4A0E4E')
+ax3.text(5, 5.5, 'Neither player can improve by unilaterally changing strategy',
+         fontsize=10, ha='center')
+ax3.text(5, 5.1, r'$\Rightarrow$ Stable cognitive control state', fontsize=10, ha='center',
+         style='italic', color='#6A4C93')
+ax3.text(5, 4.7, 'Balance between executive control and automatic responses',
+         fontsize=9, ha='center', color='#666666')
+
+# HJI characterization
+hji_box = FancyBboxPatch((0.5, 1), 9, 3, boxstyle="round,pad=0.15",
+                         edgecolor='#1B4965', facecolor='#E8F1F5', linewidth=2.5)
+ax3.add_patch(hji_box)
+ax3.text(5, 3.5, 'Hamilton-Jacobi-Isaacs System', fontsize=11, ha='center',
+         fontweight='bold', color='#1B4965')
+ax3.text(5, 3, r'$\frac{\partial V^i}{\partial t} + H^i(t, x, \nabla V^i, \nabla V^j) = 0$',
+         fontsize=11, ha='center', style='italic')
+ax3.text(5, 1.8, r'$u^{i*}(t,x) = -(R^i)^{-1}(B^i)^T \nabla_{x^i} V^i(t,x)$',
+         fontsize=10, ha='center', style='italic')
+ax3.text(5, 1.3, 'Characterizes equilibrium strategies via coupled PDEs',
+         fontsize=9, ha='center', color='#666666')
+
+# ============================================================================
+# Panel D: Computational Framework
+# ============================================================================
+ax4 = plt.subplot(2, 2, 4)
+ax4.set_xlim(0, 10)
+ax4.set_ylim(0, 10)
+ax4.axis('off')
+ax4.set_title('(D) Computational Approximation', fontsize=14, fontweight='bold', pad=20)
+
+# Problem statement
+prob_box = FancyBboxPatch((0.5, 8), 9, 1.5, boxstyle="round,pad=0.1",
+                          edgecolor='#DC2F02', facecolor='#FFE8E0', linewidth=2)
+ax4.add_patch(prob_box)
+ax4.text(5, 9, 'Challenge: HJI system analytically intractable', fontsize=10,
+         ha='center', fontweight='bold', color='#9B2226')
+ax4.text(5, 8.5, 'High-dimensional state space, nonlinear dynamics, stochastic noise',
+         fontsize=9, ha='center', color='#666666')
+
+# Solution approach
+sol_box = FancyBboxPatch((0.5, 5.5), 9, 2, boxstyle="round,pad=0.15",
+                         edgecolor='#06A77D', facecolor='#E8F7F0', linewidth=2.5)
+ax4.add_patch(sol_box)
+ax4.text(5, 7.1, 'Solution: Multi-Agent Deep RL (MADDPG)', fontsize=11,
+         ha='center', fontweight='bold', color='#005F43')
+ax4.text(5, 6.6, r'$\mu^i_{\theta^i}(x) \approx u^{i*}(x)$',
+         fontsize=10, ha='center', style='italic')
+ax4.text(5, 6.2, r'$Q^i_{\phi^i}(x, u^1, u^2) \approx$ Q-value',
+         fontsize=10, ha='center', style='italic')
+ax4.text(5, 5.8, 'Learn Nash equilibrium through experience replay & gradient descent',
+         fontsize=9, ha='center', color='#666666')
+
+# Algorithm flow
+flow_box = FancyBboxPatch((1, 1), 8, 4, boxstyle="round,pad=0.15",
+                          edgecolor='#023E8A', facecolor='#E8F4FF', linewidth=2)
+ax4.add_patch(flow_box)
+
+y_pos = 4.3
+steps = [
+    '1. Simulate SDE trajectories with current policies',
+    '2. Store experiences in replay buffer',
+    '3. Update critics via TD-learning',
+    '4. Update actors via policy gradient',
+    '5. Repeat until convergence'
+]
+ax4.text(5, y_pos + 0.3, 'Training Algorithm:', fontsize=10, ha='center',
+         fontweight='bold', color='#023E8A')
+for i, step in enumerate(steps):
+    ax4.text(1.5, y_pos - 0.5 - i*0.5, step, fontsize=9, va='center', color='#001D3D')
+
+# Performance note
+perf_box = FancyBboxPatch((1.5, 0.2), 7, 0.6, boxstyle="round,pad=0.05",
+                          edgecolor='#F77F00', facecolor='#FFF8E1', linewidth=1.5)
+ax4.add_patch(perf_box)
+ax4.text(5, 0.5, r'Computational scaling: $O(d^{1.9})$ - enables real-time applications',
+         fontsize=9, ha='center', fontweight='bold', color='#D35400')
+
+plt.tight_layout(rect=[0, 0, 1, 0.97])
+plt.savefig('figure1_neural_competition_schematic.png', dpi=300, bbox_inches='tight')
+plt.show()
+
+print("Figure 1 saved as 'figure1_neural_competition_schematic.png'")
+print("\nFigure components:")
+print("(A) Coupled stochastic dynamics with competition")
+print("(B) Cost functionals and strategic objectives")
+print("(C) Nash equilibrium definition and HJI characterization")
+print("(D) Computational approximation via MADDPG")
